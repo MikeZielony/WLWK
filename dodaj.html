@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Dodaj zdjęcie</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    form { display: flex; flex-direction: column; max-width: 400px; }
+    input, textarea, button { margin-bottom: 10px; padding: 8px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Dodaj zdjęcie do galerii</h1>
+  <form id="form">
+    <input type="url" id="url" placeholder="Adres URL zdjęcia" required>
+    <textarea id="opis" placeholder="Opis zdjęcia" required></textarea>
+    <button type="submit">Dodaj do galerii</button>
+  </form>
+  <a href="galeria.html">Zobacz galerię</a>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const url = document.getElementById('url').value;
+      const opis = document.getElementById('opis').value;
+
+      const galeria = JSON.parse(localStorage.getItem('galeria') || '[]');
+      galeria.push({ id: Date.now(), url, opis });
+      localStorage.setItem('galeria', JSON.stringify(galeria));
+
+      window.location.href = 'galeria.html';
+    });
+  </script>
+</body>
+</html>

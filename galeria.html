@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeria zdjęć</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .zdjecie { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+    img { max-width: 100%; max-height: 300px; display: block; margin-bottom: 10px; }
+    .opis { font-size: 16px; margin-bottom: 5px; }
+    .przyciski button { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Galeria zdjęć</h1>
+  <div id="galeria"></div>
+  <a href="dodaj.html">Dodaj nowe zdjęcie</a>
+
+  <script>
+    function wczytajGalerie() {
+      const container = document.getElementById('galeria');
+      container.innerHTML = '';
+      const galeria = JSON.parse(localStorage.getItem('galeria') || '[]');
+
+      galeria.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'zdjecie';
+        div.innerHTML = `
+          <img src="${item.url}" alt="Zdjęcie">
+          <div class="opis" contenteditable="false">${item.opis}</div>
+          <div class="przyciski">
+            <button onclick="edytuj(${item.id}, this)">Edytuj</button>
+            <button onclick="usun(${item.id})">Usuń</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function usun(id) {
+      let galeria = JSON.parse(localStorage.getItem('galeria') || '[]');
+      galeria = galeria.filter(item => item.id !== id);
+      localStorage.setItem('galeria', JSON.stringify(galeria));
+      wczytajGalerie();
+    }
+
+    function edytuj(id, button) {
+      const opisEl = button.parentElement.previousElementSibling;
+      const isEditing = opisEl.isContentEditable;
+      if (isEditing) {
+        opisEl.contentEditable = false;
+        button.textContent = 'Edytuj';
+
+        // Zapis edytowanego opisu
+        const galeria = JSON.parse(localStorage.getItem('galeria') || '[]');
+        const indeks = galeria.findIndex(item => item.id === id);
+        if (indeks !== -1) {
+          galeria[indeks].opis = opisEl.textContent;
+          localStorage.setItem('galeria', JSON.stringify(galeria));
+        }
+      } else {
+        opisEl.contentEditable = true;
+        opisEl.focus();
+        button.textContent = 'Zapisz';
+      }
+    }
+
+    // Wczytaj przy starcie
+    wczytajGalerie();
+  </script>
+</body>
+</html>
