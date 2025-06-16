@@ -87,7 +87,7 @@
     });
 
     // Załaduj galerię z LocalStorage
-    let savedItems = JSON.parse(localStorage.getItem('galleryItems')) || [];
+    let savedItems = JSON.parse(localStorage.getItem('galleryItems1')) || [];
     renderGallery();
 
     addToGalleryBtn.addEventListener('click', function () {
@@ -103,7 +103,7 @@
       };
 
       savedItems.push(newItem);
-      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+      localStorage.setItem('galleryItems1', JSON.stringify(savedItems));
 
       textInput.value = '';
       imageInput.value = '';
@@ -134,7 +134,7 @@
         if (item.id === id) item.text = newText;
         return item;
       });
-      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+      localStorage.setItem('galleryItems1', JSON.stringify(savedItems));
       alert('Zapisano opis.');
     };
 
@@ -142,7 +142,7 @@
     window.deleteItem = function (id) {
       if (!confirm("Czy na pewno chcesz usunąć to zdjęcie?")) return;
       savedItems = savedItems.filter(item => item.id !== id);
-      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+      localStorage.setItem('galleryItems1', JSON.stringify(savedItems));
       renderGallery();
     };
   </script>
