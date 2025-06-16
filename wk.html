@@ -1,1 +1,65 @@
-<h3>Wisla Kraków</h3>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Zdjęcie i tekst</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, textarea {
+      display: block;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dodaj zdjęcie i tekst</h1>
+
+  <label for="imageInput">Wybierz zdjęcie:</label>
+  <input type="file" id="imageInput" accept="image/*">
+
+  <label for="textInput">Wpisz tekst:</label>
+  <textarea id="textInput" rows="4" cols="50" placeholder="Wpisz tutaj..."></textarea>
+
+  <div id="output">
+    <h2>Podgląd:</h2>
+    <img id="preview" src="" alt="Podgląd zdjęcia" style="display:none;">
+    <p id="textOutput"></p>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const textInput = document.getElementById('textInput');
+    const textOutput = document.getElementById('textOutput');
+
+    imageInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    textInput.addEventListener('input', function() {
+      textOutput.textContent = this.value;
+    });
+  </script>
+</body>
+</html>
