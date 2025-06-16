@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeria zdjęć z opisem</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    input, textarea, button {
+      display: block;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .form-section {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .gallery-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .gallery-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      max-width: 300px;
+      text-align: center;
+      position: relative;
+    }
+    .gallery-item img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .gallery-item textarea {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    .gallery-item button {
+      margin: 2px;
+      font-size: 14px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dodaj zdjęcie i opis</h1>
+
+  <div class="form-section">
+    <label for="imageInput">Wybierz zdjęcie:</label>
+    <input type="file" id="imageInput" accept="image/*">
+
+    <label for="textInput">Wpisz opis:</label>
+    <textarea id="textInput" rows="3" placeholder="Opis..."></textarea>
+
+    <button id="addToGallery">Dodaj do galerii</button>
+  </div>
+
+  <h2>Galeria</h2>
+  <div class="gallery-section" id="gallery"></div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const textInput = document.getElementById('textInput');
+    const addToGalleryBtn = document.getElementById('addToGallery');
+    const gallery = document.getElementById('gallery');
+
+    let imageData = '';
+
+    // Wczytanie zdjęcia
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imageData = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Załaduj galerię z LocalStorage
+    let savedItems = JSON.parse(localStorage.getItem('galleryItems')) || [];
+    renderGallery();
+
+    addToGalleryBtn.addEventListener('click', function () {
+      if (!imageData || !textInput.value.trim()) {
+        alert('Dodaj zdjęcie i opis!');
+        return;
+      }
+
+      const newItem = {
+        id: Date.now(),
+        image: imageData,
+        text: textInput.value.trim()
+      };
+
+      savedItems.push(newItem);
+      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+
+      textInput.value = '';
+      imageInput.value = '';
+      imageData = '';
+      renderGallery();
+    });
+
+    function renderGallery() {
+      gallery.innerHTML = '';
+      savedItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="Zdjęcie">
+          <textarea>${item.text}</textarea>
+          <button onclick="saveEdit(${item.id}, this)">💾 Zapisz</button>
+          <button onclick="deleteItem(${item.id})">🗑 Usuń</button>
+        `;
+        gallery.appendChild(div);
+      });
+    }
+
+    // Zapis edytowanego opisu
+    window.saveEdit = function (id, btn) {
+      const textarea = btn.previousElementSibling;
+      const newText = textarea.value.trim();
+      savedItems = savedItems.map(item => {
+        if (item.id === id) item.text = newText;
+        return item;
+      });
+      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+      alert('Zapisano opis.');
+    };
+
+    // Usunięcie zdjęcia
+    window.deleteItem = function (id) {
+      if (!confirm("Czy na pewno chcesz usunąć to zdjęcie?")) return;
+      savedItems = savedItems.filter(item => item.id !== id);
+      localStorage.setItem('galleryItems', JSON.stringify(savedItems));
+      renderGallery();
+    };
+  </script>
+</body>
+</html>
